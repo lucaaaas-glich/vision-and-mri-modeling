@@ -59,13 +59,63 @@ python barnsley_fern.py
 The program displays the fractal and saves a high-resolution image to
 `images/barnsley_fern.png`.
 
+Optional arguments make the experiment reproducible and allow different
+settings to be compared:
+
+```bash
+python barnsley_fern.py --walkers 20000 --steps 150 --seed 3710 --cmap viridis
+```
+
+## Fractal analysis
+
+Run the analysis with:
+
+```bash
+python analyze_fern.py
+```
+
+The script estimates the box-counting dimension. It overlays the fern with
+square grids of progressively smaller box size conceptually, counts how many
+boxes contain at least one point, and fits the relationship
+
+```text
+log(number of occupied boxes) = D * log(1 / box size) + constant
+```
+
+The fitted slope `D` is the estimated fractal dimension. The script also reports
+the linear fit's R-squared value and repeats the estimate with increasing point
+counts. A stable estimate and a near-linear log-log relationship provide more
+evidence than a single attractive image that the generated object has fractal
+scaling behaviour.
+
+The combined output is saved to `images/fractal_analysis.png` and contains:
+
+1. the generated fern;
+2. the box-counting log-log fit; and
+3. the estimated dimension as the number of sampled points increases.
+
+![Barnsley Fern fractal analysis](images/fractal_analysis.png)
+
+With seed 3710, 1,000,000 generated points, and grid sizes from 16 to 512,
+the current analysis produced:
+
+- estimated box-counting dimension: **1.8149**;
+- linear-fit R-squared: **1.0000**; and
+- an estimate that moves toward the final value as the sample grows.
+
+The numerical value is an estimate, not an exact proof of dimension. It depends
+on finite sampling and the selected range of box sizes. The convergence plot and
+R-squared value help make those limitations visible.
+
 ## Project structure
 
 ```text
 .
 |-- barnsley_fern.py
+|-- analyze_fern.py
 |-- images/
-|   `-- barnsley_fern.png
+|   |-- barnsley_fern.png
+|   `-- fractal_analysis.png
 |-- requirements.txt
 `-- README.md
 ```

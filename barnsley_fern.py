@@ -1,85 +1,142 @@
-import torch
+import argparse
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import torch
 
 
-# 1. 选择设备：Mac M2 优先使用 MPS
-if torch.backends.mps.is_available():
-    device = torch.device("mps")
-else:
-    device = torch.device("cpu")
-
-print("Using device:", device)
+def select_device():
+    """Use Apple MPS when available and otherwise fall back to the CPU."""
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
 
 
-# 2. 参数
-num_walkers = 20_000   # 同时并行生成多少条轨迹
-num_steps = 150        # 每条轨迹迭代多少次
-burn_in = 20           # 丢弃前几步，减少初始点影响
+def generate_fern(
+    num_walkers=20_000,
+    num_steps=150,
+    burn_in=20,
+    device=None,
+    seed=3710,
+):
+    """Generate Barnsley Fern points with parallel PyTorch walkers.
+
+    Each walker independently selects one of the four affine transformations at
+    every step. Points remain on the selected device during generation and are
+    transferred to the CPU only once at the end.
+    """
+    if num_walkers <= 0:
+        raise ValueError("num_walkers must be positive")
+    if num_steps <= burn_in:
+        raise ValueError("num_steps must be greater than burn_in")
+
+    if device is None:
+        device = select_device()
+
+    torch.manual_seed(seed)
+
+    x = torch.zeros(num_walkers, device=device)
+    y = torch.zeros(num_walkers, device=device)
+    saved_x = []
+    saved_y = []
+
+    for step in range(num_steps):
+        probabilities = torch.rand(num_walkers, device=device)
+
+        new_x = torch.empty_like(x)
+        new_y = torch.empty_like(y)
+
+        stem = probabilities < 0.01
+        main_leaflets = (probabilities >= 0.01) & (probabilities < 0.86)
+        left_leaflet = (probabilities >= 0.86) & (probabilities < 0.93)
+        right_leaflet = probabilities >= 0.93
+
+        new_x[stem] = 0.0
+        new_y[stem] = 0.16 * y[stem]
+
+        new_x[main_leaflets] = (
+            0.85 * x[main_leaflets] + 0.04 * y[main_leaflets]
+        )
+        new_y[main_leaflets] = (
+            -0.04 * x[main_leaflets] + 0.85 * y[main_leaflets] + 1.6
+        )
+
+        new_x[left_leaflet] = (
+            0.20 * x[left_leaflet] - 0.26 * y[left_leaflet]
+        )
+        new_y[left_leaflet] = (
+            0.23 * x[left_leaflet] + 0.22 * y[left_leaflet] + 1.6
+        )
+
+        new_x[right_leaflet] = (
+            -0.15 * x[right_leaflet] + 0.28 * y[right_leaflet]
+        )
+        new_y[right_leaflet] = (
+            0.26 * x[right_leaflet] + 0.24 * y[right_leaflet] + 0.44
+        )
+
+        x, y = new_x, new_y
+
+        if step >= burn_in:
+            saved_x.append(x)
+            saved_y.append(y)
+
+    all_x = torch.cat(saved_x).cpu().numpy()
+    all_y = torch.cat(saved_y).cpu().numpy()
+    return all_x, all_y
 
 
-# 3. 所有轨迹都从原点开始
-x = torch.zeros(num_walkers, device=device)
-y = torch.zeros(num_walkers, device=device)
+def plot_fern(x, y, output_path, cmap="viridis", show=True):
+    """Plot and save generated fern points."""
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-points_x = []
-points_y = []
+    figure, axis = plt.subplots(figsize=(6, 10))
+    scatter = axis.scatter(x, y, c=y, s=0.05, cmap=cmap, linewidths=0)
+    axis.set_title("Barnsley Fern")
+    axis.set_aspect("equal")
+    axis.axis("off")
+    figure.colorbar(scatter, ax=axis, label="Vertical position", fraction=0.04)
+    figure.tight_layout()
+    figure.savefig(output_path, dpi=300, bbox_inches="tight")
 
-
-# 4. 迭代生成 Barnsley Fern
-for step in range(num_steps):
-    # 每条轨迹独立生成一个 0 到 1 的随机数
-    r = torch.rand(num_walkers, device=device)
-
-    new_x = torch.empty_like(x)
-    new_y = torch.empty_like(y)
-
-    mask1 = r < 0.01
-    mask2 = (r >= 0.01) & (r < 0.86)
-    mask3 = (r >= 0.86) & (r < 0.93)
-    mask4 = r >= 0.93
-
-    # 变换 1：茎底部
-    new_x[mask1] = 0.0
-    new_y[mask1] = 0.16 * y[mask1]
-
-    # 变换 2：主体叶片
-    new_x[mask2] = 0.85 * x[mask2] + 0.04 * y[mask2]
-    new_y[mask2] = -0.04 * x[mask2] + 0.85 * y[mask2] + 1.6
-
-    # 变换 3：左侧叶片
-    new_x[mask3] = 0.20 * x[mask3] - 0.26 * y[mask3]
-    new_y[mask3] = 0.23 * x[mask3] + 0.22 * y[mask3] + 1.6
-
-    # 变换 4：右侧叶片
-    new_x[mask4] = -0.15 * x[mask4] + 0.28 * y[mask4]
-    new_y[mask4] = 0.26 * x[mask4] + 0.24 * y[mask4] + 0.44
-
-    x, y = new_x, new_y
-
-    if step >= burn_in:
-        points_x.append(x.cpu())
-        points_y.append(y.cpu())
+    if show:
+        plt.show()
+    else:
+        plt.close(figure)
 
 
-all_x = torch.cat(points_x).numpy()
-all_y = torch.cat(points_y).numpy()
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Generate a PyTorch Barnsley Fern")
+    parser.add_argument("--walkers", type=int, default=20_000)
+    parser.add_argument("--steps", type=int, default=150)
+    parser.add_argument("--burn-in", type=int, default=20)
+    parser.add_argument("--seed", type=int, default=3710)
+    parser.add_argument("--cmap", default="viridis")
+    parser.add_argument(
+        "--output", default="images/barnsley_fern.png", help="output image path"
+    )
+    parser.add_argument("--no-show", action="store_true")
+    return parser.parse_args()
 
 
-plt.figure(figsize=(6, 10))
-plt.scatter(
-    all_x,
-    all_y,
-    c=range(len(all_x)),
-    s=0.05,
-    cmap="plasma"
-)
-plt.title("Barnsley Fern")
-plt.axis("equal")
-plt.axis("off")
-plt.tight_layout()
-plt.savefig(
-    "images/barnsley_fern.png",
-    dpi=300,
-    bbox_inches="tight"
-)
-plt.show()
+def main():
+    args = parse_arguments()
+    device = select_device()
+    print("Using device:", device)
+
+    x, y = generate_fern(
+        num_walkers=args.walkers,
+        num_steps=args.steps,
+        burn_in=args.burn_in,
+        device=device,
+        seed=args.seed,
+    )
+    print(f"Generated {len(x):,} points")
+
+    plot_fern(x, y, args.output, cmap=args.cmap, show=not args.no_show)
+    print("Saved image to:", args.output)
+
+
+if __name__ == "__main__":
+    main()

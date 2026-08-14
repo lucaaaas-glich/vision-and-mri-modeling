@@ -154,12 +154,15 @@ during review included:
   of the fractal.
 
 These limitations are being addressed through separate, reviewable Git commits.
+The repository now includes an improved generator and a separate box-counting
+analysis; the remaining Part 1 presentation improvement is tracked separately.
 
 ## Further analysis and academic responsibility
 
-The final project will include analysis beyond producing one image, including a
-fractal-dimension estimate and a comparison of computational settings. The
-Barnsley Fern choice must also be confirmed with the teaching team because the
+The project now includes analysis beyond producing one image. A box-counting
+experiment estimates the fractal dimension, reports goodness of fit, and tests
+how the estimate changes as the number of sampled points increases. The
+Barnsley Fern choice must still be confirmed with the teaching team because the
 lab specification requires approval for a fractal selected from the referenced
 Wikipedia list.
 
