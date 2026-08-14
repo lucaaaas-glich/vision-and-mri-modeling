@@ -72,8 +72,9 @@ The program displays the fractal and saves a high-resolution image to
 
 ## AI-assisted development
 
-AI tools were used during development. The prompts, suggestions, verification
-steps, limitations, and student changes will be recorded in `AI_USAGE.md`.
+AI tools were used during development. The available prompts, reconstructed
+interaction summaries, suggestions, verification steps, limitations, and
+student changes are documented in [AI_USAGE.md](AI_USAGE.md).
 
 ## Course approval
 
