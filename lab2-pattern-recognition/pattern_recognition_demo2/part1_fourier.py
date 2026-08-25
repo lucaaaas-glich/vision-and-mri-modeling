@@ -91,3 +91,87 @@ for i, Nh in enumerate(harmonics, start=2):
 
 plt.tight_layout()
 plt.show()
+
+import time
+
+
+def naive_dft(x):
+    N = len(x)
+
+    X = np.zeros(
+        N,
+        dtype=np.complex128
+    )
+
+    for k in range(N):
+
+        for n in range(N):
+
+            angle = -2j * np.pi * k * n / N
+
+            X[k] += (
+                x[n] *
+                np.exp(angle)
+            )
+
+    return X
+
+
+# Use 50 harmonics to build the square wave
+signal = square_wave_fourier(
+    t,
+    f0,
+    50
+)
+
+
+# Naive DFT
+start = time.time()
+
+dft_result = naive_dft(signal)
+
+end = time.time()
+
+naive_time = end - start
+
+
+# NumPy FFT
+start = time.time()
+
+fft_result = np.fft.fft(signal)
+
+end = time.time()
+
+fft_time = end - start
+
+
+print("Naive DFT time:", naive_time)
+print("FFT time:", fft_time)
+
+print(
+    "Results close:",
+    np.allclose(
+        dft_result,
+        fft_result
+    )
+)
+
+# Frequency axis: only positive frequencies
+xf = np.fft.fftfreq(N, d=T / N)[:N // 2]
+
+# Convert complex DFT coefficients to magnitude
+magnitude = 2.0 / N * np.abs(dft_result[:N // 2])
+
+plt.figure(figsize=(12, 5))
+
+plt.stem(xf, magnitude, basefmt=" ")
+
+plt.title("DFT Magnitude Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+
+# Only show low frequencies clearly
+plt.xlim(0, 50)
+
+plt.grid(True)
+plt.show()
