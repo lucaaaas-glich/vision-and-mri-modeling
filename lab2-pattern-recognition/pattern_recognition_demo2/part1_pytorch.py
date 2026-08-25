@@ -46,3 +46,48 @@ def square_wave_fourier_torch(t, f0, n_harmonics):
         )
 
     return (4 / torch.pi) * result
+
+signal = square_wave_fourier_torch(
+    t,
+    f0,
+    50
+)
+
+print("Signal device:", signal.device)
+print("Signal shape:", signal.shape)
+print("Signal min:", signal.min().item())
+print("Signal max:", signal.max().item())
+
+
+import time
+
+
+def naive_dft_torch(x):
+    N = x.shape[0]
+
+    # k = frequency indices
+    k = torch.arange(
+        N,
+        device=x.device,
+        dtype=torch.float32
+    ).reshape(N, 1)
+
+    # n = sample indices
+    n = torch.arange(
+        N,
+        device=x.device,
+        dtype=torch.float32
+    ).reshape(1, N)
+
+    # DFT angle matrix
+    angle = -2 * torch.pi * k * n / N
+
+    # Build complex Fourier basis
+    fourier_matrix = torch.exp(
+        1j * angle
+    )
+
+    # Matrix-vector multiplication
+    X = fourier_matrix @ x.to(torch.complex64)
+
+    return X
