@@ -4,3 +4,14 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# Lab 2 datasets, generated results, and model checkpoints
+data/
+**/data/
+**/results/*
+!**/results/.gitkeep
+*.ckpt
+*.pth
+*.pt
+*.onnx
+.ipynb_checkpoints/
