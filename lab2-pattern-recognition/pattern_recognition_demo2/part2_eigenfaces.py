@@ -189,3 +189,45 @@ print(
     "Variance retained by 150 components:",
     ratio_cumsum[n_components - 1]
 )
+
+
+from sklearn.ensemble import RandomForestClassifier
+
+
+estimator = RandomForestClassifier(
+    n_estimators=150,
+    max_depth=15,
+    max_features=150,
+    random_state=42
+)
+
+# Train the classifier
+estimator.fit(
+    X_transformed,
+    y_train
+)
+
+# Predict test faces
+predictions = estimator.predict(
+    X_test_transformed
+)
+
+correct = predictions == y_test
+
+total_test = len(
+    X_test_transformed
+)
+
+accuracy = np.sum(correct) / total_test
+
+print("Total Testing:", total_test)
+print("Total Correct:", np.sum(correct))
+print("Accuracy:", accuracy)
+
+print(
+    classification_report(
+        y_test,
+        predictions,
+        target_names=target_names
+    )
+)
