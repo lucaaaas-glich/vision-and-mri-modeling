@@ -91,3 +91,63 @@ def naive_dft_torch(x):
     X = fourier_matrix @ x.to(torch.complex64)
 
     return X
+
+# Warm-up
+_ = naive_dft_torch(signal)
+torch.mps.synchronize()
+
+start = time.time()
+
+gpu_dft_result = naive_dft_torch(signal)
+
+torch.mps.synchronize()
+gpu_time = time.time() - start
+
+print("GPU DFT time:", gpu_time)
+
+torch_fft_result = torch.fft.fft(
+    signal.to(torch.complex64)
+)
+
+print(
+    "GPU DFT close to Torch FFT:",
+    torch.allclose(
+        gpu_dft_result,
+        torch_fft_result,
+        atol=1e-2,
+        rtol=1e-3
+    )
+)
+
+difference = torch.abs(
+    gpu_dft_result - torch_fft_result
+)
+
+print("Max absolute difference:", difference.max().item())
+print("Mean absolute difference:", difference.mean().item())
+
+max_index = torch.argmax(difference)
+
+print("Largest difference at index:", max_index.item())
+print("GPU DFT value:", gpu_dft_result[max_index])
+print("Torch FFT value:", torch_fft_result[max_index])
+
+print(
+    "Close atol=1e-2:",
+    torch.allclose(
+        gpu_dft_result,
+        torch_fft_result,
+        atol=1e-2,
+        rtol=1e-3
+    )
+)
+
+print(
+    "Close atol=1e-1:",
+    torch.allclose(
+        gpu_dft_result,
+        torch_fft_result,
+        atol=1e-1,
+        rtol=1e-2
+    )
+)
