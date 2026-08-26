@@ -155,3 +155,37 @@ plot_gallery(
 )
 
 plt.show()
+
+
+explained_variance = (S ** 2) / (len(X_train) - 1)
+
+total_var = explained_variance.sum()
+
+explained_variance_ratio = explained_variance / total_var
+
+ratio_cumsum = np.cumsum(
+    explained_variance_ratio
+)
+
+eigenvalue_count = np.arange(
+    n_components
+)
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    eigenvalue_count,
+    ratio_cumsum[:n_components]
+)
+
+plt.title("Compactness")
+plt.xlabel("Number of Principal Components")
+plt.ylabel("Cumulative Explained Variance")
+
+plt.grid(True)
+plt.show()
+
+print(
+    "Variance retained by 150 components:",
+    ratio_cumsum[n_components - 1]
+)
