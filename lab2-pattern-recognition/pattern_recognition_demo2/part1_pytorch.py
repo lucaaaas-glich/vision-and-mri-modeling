@@ -65,7 +65,8 @@ import time
 def naive_dft_torch(x):
     N = x.shape[0]
 
-    # k = frequency indices
+    # k 是频率索引（列向量），n 是时间采样索引（行向量）。
+    # 广播后 k*n 会生成 N×N 的 DFT 基矩阵；计算仍是 O(N^2)，但可并行执行。
     k = torch.arange(
         N,
         device=x.device,
@@ -92,15 +93,18 @@ def naive_dft_torch(x):
 
     return X
 
-# Warm-up
+# GPU 第一次运行包含初始化开销，因此先 warm-up，并在计时前后 synchronize。
+# synchronize 很重要：GPU 运算是异步的，不同步会得到不真实的较短时间。
 _ = naive_dft_torch(signal)
-torch.mps.synchronize()
+if device.type == "mps":
+    torch.mps.synchronize()
 
 start = time.time()
 
 gpu_dft_result = naive_dft_torch(signal)
 
-torch.mps.synchronize()
+if device.type == "mps":
+    torch.mps.synchronize()
 gpu_time = time.time() - start
 
 print("GPU DFT time:", gpu_time)

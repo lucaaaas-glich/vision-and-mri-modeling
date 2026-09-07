@@ -42,9 +42,32 @@ environment. Keep cluster setup instructions separate when they are added.
 
 - [x] Part 1: NumPy square-wave Fourier reconstruction started
 - [ ] Part 1: NumPy/PyTorch DFT timing comparison
-- [ ] Part 2: Eigenfaces, compactness plot, and random-forest classification
-- [ ] Part 3.1: Two-layer CNN classifier for LFW
-- [ ] Part 3.2: CIFAR-10 ResNet-18 training and Rangpur demonstration
+- [x] Part 2: Eigenfaces, compactness plot, and random-forest classification
+- [x] Part 3.1: Two-layer CNN classifier for LFW (training run still required)
+- [x] Part 3.2: CIFAR-10 ResNet-18 implementation (cluster training still required)
 - [ ] Part 4: Selected OASIS recognition task
 - [ ] Add result plots and demonstration notes
 - [ ] Document AI assistance and external sources
+
+## Part 3 commands
+
+Quickly verify the LFW CNN pipeline, then run the full 20 epochs:
+
+```bash
+python pattern_recognition_demo2/part3_lfw_cnn.py --smoke-test
+python pattern_recognition_demo2/part3_lfw_cnn.py --epochs 20
+```
+
+Train CIFAR-10 ResNet-18 on Rangpur with mixed precision automatically enabled
+on CUDA. Adjust the worker count to suit the cluster allocation:
+
+```bash
+python pattern_recognition_demo2/part3_cifar10_resnet18.py --epochs 100 --batch-size 256 --workers 4
+```
+
+During the demonstration, load the best checkpoint, run inference, and train one
+additional epoch:
+
+```bash
+python pattern_recognition_demo2/part3_cifar10_resnet18.py --demo --batch-size 256 --workers 4
+```

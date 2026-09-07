@@ -15,6 +15,8 @@ lfw_people = fetch_lfw_people(
 # Dataset shape
 n_samples, h, w = lfw_people.images.shape
 
+# .data 会把每张二维人脸摊平成一维向量；这是 PCA/RF 需要的输入形式。
+# 到 P3 的 CNN 时要改用 lfw_people.images，因为 CNN 需要保留二维空间结构。
 X = lfw_people.data
 y = lfw_people.target
 
@@ -57,7 +59,8 @@ print("X_test shape:", X_test.shape)
 n_components = 150
 
 
-# Compute mean face using training data only
+# 只能用训练集计算 mean；若使用测试集信息，会发生 data leakage（数据泄漏）。
+# PCA 的中心化使每个样本表示成“相对平均脸的变化”。
 mean = np.mean(
     X_train,
     axis=0
@@ -71,7 +74,8 @@ X_train = X_train - mean
 X_test = X_test - mean
 
 
-# SVD
+# SVD: X = U S V^T。V 的每一行是像素空间中的主方向，也就是 eigenface。
+# 奇异值 S 越大，代表对应主方向解释的数据变化越多。
 U, S, V = np.linalg.svd(
     X_train,
     full_matrices=False
@@ -96,7 +100,8 @@ eigenfaces = components.reshape(
 print("Eigenfaces shape:", eigenfaces.shape)
 
 
-# Project training and testing data into PCA space
+# 与 components.T 相乘，把 1850 维像素投影为 150 维 face-space 特征。
+# 测试集必须使用训练集学到的同一组 components，不能重新做 PCA。
 X_transformed = np.dot(
     X_train,
     components.T
@@ -157,6 +162,7 @@ plot_gallery(
 plt.show()
 
 
+# 累积解释方差（compactness）说明前 k 个 components 保留了多少总变化。
 explained_variance = (S ** 2) / (len(X_train) - 1)
 
 total_var = explained_variance.sum()
@@ -194,6 +200,7 @@ print(
 from sklearn.ensemble import RandomForestClassifier
 
 
+# Random Forest 不直接看原图，而是用 PCA 得到的 150 个特征分类。
 estimator = RandomForestClassifier(
     n_estimators=150,
     max_depth=15,

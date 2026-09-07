@@ -16,6 +16,7 @@ def square_wave_fourier_numpy(t, f0, n_harmonics):
 
 
 def naive_dft_numpy(x):
+    # 两层循环直接实现 DFT 定义，时间复杂度 O(N^2)。
     N = len(x)
 
     X = np.zeros(
@@ -32,6 +33,8 @@ def naive_dft_numpy(x):
 
 
 def naive_dft_torch(x):
+    # 数学上仍是 O(N^2)，速度提升主要来自 tensor 的向量化和 GPU 并行。
+    # 代价是要保存 N×N 矩阵，所以 N 增大时显存需求也按 N^2 增长。
     N = x.shape[0]
 
     k = torch.arange(
@@ -129,7 +132,7 @@ for N in sizes:
     # 2. NumPy FFT
     # -----------------------
 
-    # Run repeatedly because FFT is extremely fast
+    # FFT 为 O(N log N)。因为单次太快，重复 100 次再取平均可降低计时误差。
     repetitions = 100
 
     start = time.perf_counter()

@@ -19,6 +19,8 @@ def square_wave(t):
 
 
 def square_wave_fourier(t, f0, N_harmonics):
+    # 方波的傅里叶级数只含奇次谐波，振幅按 1/n 衰减。
+    # 增加谐波会让边缘更尖锐，但跳变处仍有 Gibbs overshoot（吉布斯现象）。
     result = np.zeros_like(t)
 
     for k in range(N_harmonics):
@@ -96,6 +98,8 @@ import time
 
 
 def naive_dft(x):
+    # 直接按 DFT 定义计算：N 个频率各遍历 N 个采样点，所以复杂度为 O(N^2)。
+    # FFT 利用对称性把复杂度降低到 O(N log N)。
     N = len(x)
 
     X = np.zeros(
@@ -159,7 +163,7 @@ print(
 # Frequency axis: only positive frequencies
 xf = np.fft.fftfreq(N, d=T / N)[:N // 2]
 
-# Convert complex DFT coefficients to magnitude
+# DFT 系数是复数；abs 得到幅值。单边频谱乘 2 是为了补回负频率的一半。
 magnitude = 2.0 / N * np.abs(dft_result[:N // 2])
 
 plt.figure(figsize=(12, 5))
