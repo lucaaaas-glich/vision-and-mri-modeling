@@ -49,6 +49,8 @@ environment. Keep cluster setup instructions separate when they are added.
 - [x] Part 4 Task 1: Train on Rangpur and record VAE results
 - [x] Part 4 Task 2: OASIS categorical U-Net implementation (medium route)
 - [x] Part 4 Task 2: Train and verify DSC >0.9 for every label
+- [x] Part 4 Task 3: OASIS WGAN-GP implementation (hard route)
+- [ ] Part 4 Task 3: Train and visually validate realistic diverse brains
 - [ ] Add result plots and demonstration notes
 - [x] Document AI assistance and external sources
 
@@ -202,6 +204,25 @@ complete configuration and history. Raw Rangpur output is retained under
 - D. S. Marcus et al., [Open Access Series of Imaging Studies (OASIS)](https://doi.org/10.1162/jocn.2007.19.9.1498).
 
 For Chinese demonstration and revision notes, see [`P4_REVIEW_ZH.md`](P4_REVIEW_ZH.md).
+
+## Part 4 Task 3: OASIS WGAN-GP
+
+Task 3 uses a custom Wasserstein GAN with gradient penalty. The generator maps
+128-D Gaussian noise to a 128x128 grayscale MR slice. The critic outputs an
+unbounded Wasserstein score rather than a probability. Gradient penalty replaces
+weight clipping and encourages the critic gradient norm to remain near one.
+
+```bash
+python pattern_recognition_demo2/part4_oasis_wgan_gp.py \
+  --smoke-test --epochs 1 --image-size 64 --base-channels 16 --batch-size 16
+sbatch train_oasis_wgan_a100.sh
+python pattern_recognition_demo2/part4_oasis_wgan_gp.py --demo
+```
+
+The program saves fixed-noise samples during training, fresh final generations,
+loss/critic-diagnostic curves and simple pairwise-diversity measurements. These
+diagnostics help identify mode collapse but do not replace visual assessment of
+brain realism.
 
 ## AI assistance statement
 
