@@ -1,0 +1,6 @@
+Device: cuda
+Samples: train=9664, validation=1120, test=544
+Trainable parameters: 7,762,564
+Class pixel frequencies: ['0.7242', '0.0546', '0.1141', '0.1072']
+Cross-entropy weights: ['0.410', '1.493', '1.032', '1.065']
+Test inference | loss 0.097913 | label 0 DSC 0.9990 | label 1 DSC 0.9405 | label 2 DSC 0.9444 | label 3 DSC 0.9685

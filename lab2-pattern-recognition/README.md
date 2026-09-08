@@ -46,11 +46,11 @@ environment. Keep cluster setup instructions separate when they are added.
 - [x] Part 3.1: Two-layer CNN classifier for LFW, trained and evaluated
 - [x] Part 3.2: CIFAR-10 ResNet-18, trained with mixed precision on Rangpur A100
 - [x] Part 4 Task 1: OASIS convolutional VAE implementation
-- [ ] Part 4 Task 1: Train on Rangpur and record VAE results
+- [x] Part 4 Task 1: Train on Rangpur and record VAE results
 - [x] Part 4 Task 2: OASIS categorical U-Net implementation (medium route)
-- [ ] Part 4 Task 2: Train and verify DSC >0.9 for every label
+- [x] Part 4 Task 2: Train and verify DSC >0.9 for every label
 - [ ] Add result plots and demonstration notes
-- [ ] Document AI assistance and external sources
+- [x] Document AI assistance and external sources
 
 ## Part 3 commands
 
@@ -136,6 +136,23 @@ the best validation checkpoint, learning curves, original/reconstructed image
 pairs, a PCA projection of latent means, a sampled two-dimensional manifold,
 and machine-readable metrics under `results/part4_vae/`.
 
+### VAE result
+
+The model was trained on 9,664 official training slices and evaluated on 1,120
+official validation slices. At 128x128 resolution, 20 epochs took **156.0
+seconds** on a Rangpur A100. The best validation loss was **0.007456** at epoch
+20 (reconstruction MSE 0.006039 and KL divergence 1.416143). The reconstruction
+and sampled-manifold figures show preserved brain shape and continuous changes
+through latent space.
+
+| VAE evidence | File |
+| --- | --- |
+| Original and reconstructed MR slices | [`reconstructions.png`](results/part4_vae/reconstructions.png) |
+| Sampled 2-D manifold slice | [`sampled_manifold.png`](results/part4_vae/sampled_manifold.png) |
+| PCA projection of latent means | [`latent_projection.png`](results/part4_vae/latent_projection.png) |
+| Learning curves | [`learning_curves.png`](results/part4_vae/learning_curves.png) |
+| Reproducible configuration and history | [`metrics.json`](results/part4_vae/metrics.json) |
+
 ## Part 4 Task 2: OASIS U-Net
 
 The custom U-Net pairs `case_*.nii.png` images with `seg_*.nii.png` masks. Mask
@@ -153,3 +170,40 @@ python pattern_recognition_demo2/part4_oasis_unet.py --demo
 The best checkpoint is selected by the *lowest* validation-label DSC, because
 the requirement is greater than 0.9 for every label rather than merely a high
 mean score. Outputs are saved under `results/part4_unet/`.
+
+### U-Net result
+
+The U-Net used all 9,664 training, 1,120 validation and 544 test slices. Five
+epochs at 128x128 resolution took **90.6 seconds** on a Rangpur A100. Every test
+label exceeded the required DSC of 0.9:
+
+| Label value | Class index | Validation DSC | Test DSC |
+| ---: | ---: | ---: | ---: |
+| 0 | 0 | 0.9990 | **0.9990** |
+| 85 | 1 | 0.9334 | **0.9405** |
+| 170 | 2 | 0.9453 | **0.9444** |
+| 255 | 3 | 0.9686 | **0.9685** |
+
+The separate demo inference reproduced the same scores with test loss 0.097913.
+See [`test_predictions.png`](results/part4_unet/test_predictions.png) for MRI,
+ground-truth and predicted masks, [`learning_curves.png`](results/part4_unet/learning_curves.png)
+for per-label DSC, and [`metrics.json`](results/part4_unet/metrics.json) for the
+complete configuration and history. Raw Rangpur output is retained under
+[`results/part4_logs/`](results/part4_logs/).
+
+## Part 4 references
+
+- D. P. Kingma and M. Welling, [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).
+- O. Ronneberger, P. Fischer and T. Brox, [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597).
+- D. S. Marcus et al., [Open Access Series of Imaging Studies (OASIS)](https://doi.org/10.1162/jocn.2007.19.9.1498).
+
+For Chinese demonstration and revision notes, see [`P4_REVIEW_ZH.md`](P4_REVIEW_ZH.md).
+
+## AI assistance statement
+
+OpenAI ChatGPT/Codex was used as a learning and development assistant for code
+structure, Chinese explanatory comments, debugging PyTorch/Slurm compatibility,
+and documentation. The implementation was executed on the specified datasets,
+and all reported metrics and figures were produced and checked from the actual
+Rangpur runs. The student is responsible for understanding and explaining the
+models, losses, evaluation and results during demonstration.

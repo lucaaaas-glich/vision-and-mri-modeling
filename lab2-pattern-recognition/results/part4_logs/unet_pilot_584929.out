@@ -1,0 +1,14 @@
+Device: cuda
+Samples: train=9664, validation=1120, test=544
+Trainable parameters: 7,762,564
+Class pixel frequencies: ['0.7242', '0.0546', '0.1141', '0.1072']
+Cross-entropy weights: ['0.410', '1.493', '1.032', '1.065']
+Epoch 001/5 | train loss 0.49103 DSC [0.9875, 0.7726, 0.8324, 0.8942] | val loss 0.23122 DSC [0.9964, 0.8666, 0.8995, 0.9428] | time 26.0s
+Epoch 002/5 | train loss 0.18103 DSC [0.9972, 0.888, 0.9049, 0.9462] | val loss 0.14988 DSC [0.9975, 0.8969, 0.9225, 0.9576] | time 15.6s
+Epoch 003/5 | train loss 0.12544 DSC [0.9984, 0.9193, 0.9309, 0.9618] | val loss 0.11614 DSC [0.9984, 0.9223, 0.9386, 0.9643] | time 15.3s
+Epoch 004/5 | train loss 0.10606 DSC [0.9988, 0.931, 0.9394, 0.9665] | val loss 0.10386 DSC [0.9989, 0.9313, 0.9441, 0.9679] | time 15.0s
+Epoch 005/5 | train loss 0.09871 DSC [0.999, 0.9359, 0.9428, 0.9684] | val loss 0.10095 DSC [0.999, 0.9334, 0.9453, 0.9686] | time 15.5s
+Best validation DSC: [0.9990062536145083, 0.9334281784375806, 0.9452991480879358, 0.9686401811909677]
+Test DSC: [0.998993763347553, 0.9405279217567952, 0.9444058047062651, 0.9685218099229731]
+All test labels above 0.9: True
+Checkpoint and figures saved to: results/part4_unet_pilot

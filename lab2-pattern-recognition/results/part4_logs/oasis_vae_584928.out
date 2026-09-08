@@ -1,0 +1,74 @@
+Device: cuda
+Dataset samples/slices: 9664
+Official split: 9664 train / 1120 validation slices
+Input tensor: shape=(1, 128, 128), range=[0.000, 1.000]
+ConvVAE(
+  (encoder): Sequential(
+    (0): Sequential(
+      (0): Conv2d(1, 32, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): LeakyReLU(negative_slope=0.2, inplace=True)
+    )
+    (1): Sequential(
+      (0): Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): LeakyReLU(negative_slope=0.2, inplace=True)
+    )
+    (2): Sequential(
+      (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): LeakyReLU(negative_slope=0.2, inplace=True)
+    )
+    (3): Sequential(
+      (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): LeakyReLU(negative_slope=0.2, inplace=True)
+    )
+  )
+  (fc_mu): Linear(in_features=16384, out_features=16, bias=True)
+  (fc_logvar): Linear(in_features=16384, out_features=16, bias=True)
+  (decoder_input): Linear(in_features=16, out_features=16384, bias=True)
+  (decoder): Sequential(
+    (0): Sequential(
+      (0): ConvTranspose2d(256, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (1): Sequential(
+      (0): ConvTranspose2d(128, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (2): Sequential(
+      (0): ConvTranspose2d(64, 32, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (3): ConvTranspose2d(32, 1, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (4): Sigmoid()
+  )
+)
+Trainable parameters: 2,181,537
+Epoch 001/20 | train 0.053568 (recon 0.051992, KL 1.576039) | val 0.023282 (recon 0.022212, KL 1.070092) | time 10.3s
+Epoch 002/20 | train 0.017875 (recon 0.016620, KL 1.254659) | val 0.014298 (recon 0.012940, KL 1.357974) | time 8.4s
+Epoch 003/20 | train 0.012191 (recon 0.010833, KL 1.357999) | val 0.010841 (recon 0.009554, KL 1.286451) | time 8.4s
+Epoch 004/20 | train 0.010353 (recon 0.008827, KL 1.525745) | val 0.009649 (recon 0.008298, KL 1.351349) | time 8.7s
+Epoch 005/20 | train 0.008914 (recon 0.007490, KL 1.424511) | val 0.008869 (recon 0.007434, KL 1.435155) | time 8.4s
+Epoch 006/20 | train 0.008342 (recon 0.006889, KL 1.452837) | val 0.008428 (recon 0.006991, KL 1.436791) | time 8.8s
+Epoch 007/20 | train 0.007930 (recon 0.006476, KL 1.454485) | val 0.008311 (recon 0.006920, KL 1.391312) | time 8.7s
+Epoch 008/20 | train 0.007711 (recon 0.006235, KL 1.476470) | val 0.008076 (recon 0.006627, KL 1.449681) | time 8.5s
+Epoch 009/20 | train 0.007465 (recon 0.005980, KL 1.485148) | val 0.008258 (recon 0.006873, KL 1.385047) | time 8.5s
+Epoch 010/20 | train 0.007199 (recon 0.005746, KL 1.452891) | val 0.007742 (recon 0.006338, KL 1.403358) | time 8.9s
+Epoch 011/20 | train 0.006954 (recon 0.005515, KL 1.438636) | val 0.007619 (recon 0.006283, KL 1.336674) | time 8.8s
+Epoch 012/20 | train 0.006798 (recon 0.005359, KL 1.438861) | val 0.007614 (recon 0.006234, KL 1.379338) | time 6.8s
+Epoch 013/20 | train 0.006717 (recon 0.005266, KL 1.450555) | val 0.007553 (recon 0.006133, KL 1.419202) | time 6.9s
+Epoch 014/20 | train 0.006631 (recon 0.005179, KL 1.452300) | val 0.007556 (recon 0.006112, KL 1.444344) | time 6.6s
+Epoch 015/20 | train 0.006542 (recon 0.005088, KL 1.454710) | val 0.007504 (recon 0.006026, KL 1.478250) | time 6.6s
+Epoch 016/20 | train 0.006488 (recon 0.005022, KL 1.465502) | val 0.007478 (recon 0.006094, KL 1.384626) | time 6.9s
+Epoch 017/20 | train 0.006412 (recon 0.004948, KL 1.463872) | val 0.007596 (recon 0.006197, KL 1.398873) | time 6.6s
+Epoch 018/20 | train 0.006377 (recon 0.004908, KL 1.469590) | val 0.007579 (recon 0.006206, KL 1.373023) | time 6.2s
+Epoch 019/20 | train 0.006280 (recon 0.004805, KL 1.474249) | val 0.007580 (recon 0.006174, KL 1.406184) | time 6.3s
+Epoch 020/20 | train 0.006244 (recon 0.004772, KL 1.471436) | val 0.007456 (recon 0.006039, KL 1.416143) | time 6.7s
+Best validation loss: 0.007456 at epoch 20
+Total training time: 156.0s
+Checkpoint and figures saved to: results/part4_vae

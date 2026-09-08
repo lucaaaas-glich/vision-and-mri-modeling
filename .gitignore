@@ -10,6 +10,15 @@ data/
 **/data/
 **/results/*
 !**/results/.gitkeep
+# Keep lightweight evidence for the completed Part 4 tasks on GitHub.
+!lab2-pattern-recognition/results/part4_vae/
+!lab2-pattern-recognition/results/part4_vae/*.png
+!lab2-pattern-recognition/results/part4_vae/metrics.json
+!lab2-pattern-recognition/results/part4_unet/
+!lab2-pattern-recognition/results/part4_unet/*.png
+!lab2-pattern-recognition/results/part4_unet/metrics.json
+!lab2-pattern-recognition/results/part4_logs/
+!lab2-pattern-recognition/results/part4_logs/*.out
 *.ckpt
 *.pth
 *.pt
