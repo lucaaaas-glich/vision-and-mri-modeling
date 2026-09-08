@@ -47,7 +47,8 @@ environment. Keep cluster setup instructions separate when they are added.
 - [x] Part 3.2: CIFAR-10 ResNet-18, trained with mixed precision on Rangpur A100
 - [x] Part 4 Task 1: OASIS convolutional VAE implementation
 - [ ] Part 4 Task 1: Train on Rangpur and record VAE results
-- [ ] Part 4 Task 2: OASIS U-Net segmentation (medium route)
+- [x] Part 4 Task 2: OASIS categorical U-Net implementation (medium route)
+- [ ] Part 4 Task 2: Train and verify DSC >0.9 for every label
 - [ ] Add result plots and demonstration notes
 - [ ] Document AI assistance and external sources
 
@@ -125,7 +126,7 @@ python pattern_recognition_demo2/part4_oasis_vae.py --smoke-test
 After identifying the exact OASIS subdirectory, submit the real A100 job:
 
 ```bash
-sbatch train_oasis_vae_a100.sh /home/groups/comp3710/<oasis-subdirectory>
+sbatch train_oasis_vae_a100.sh /home/groups/comp3710/OASIS
 ```
 
 The VAE uses a convolutional encoder, separate `mu` and `logvar` layers, the
@@ -134,3 +135,21 @@ pixel reconstruction MSE with beta-weighted KL divergence.  The program saves
 the best validation checkpoint, learning curves, original/reconstructed image
 pairs, a PCA projection of latent means, a sampled two-dimensional manifold,
 and machine-readable metrics under `results/part4_vae/`.
+
+## Part 4 Task 2: OASIS U-Net
+
+The custom U-Net pairs `case_*.nii.png` images with `seg_*.nii.png` masks. Mask
+values 0/85/170/255 are mapped to four classes and represented as categorical
+one-hot tensors. Cross-entropy plus soft Dice loss handles categorical accuracy
+and class overlap, while reported DSC is accumulated separately for every label
+over the complete validation/test set.
+
+```bash
+python pattern_recognition_demo2/part4_oasis_unet.py --smoke-test --image-size 64
+sbatch train_oasis_unet_a100.sh
+python pattern_recognition_demo2/part4_oasis_unet.py --demo
+```
+
+The best checkpoint is selected by the *lowest* validation-label DSC, because
+the requirement is greater than 0.9 for every label rather than merely a high
+mean score. Outputs are saved under `results/part4_unet/`.

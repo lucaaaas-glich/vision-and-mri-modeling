@@ -440,9 +440,14 @@ def save_history(history: dict[str, list[float]], output: Path) -> None:
     plt.close(fig)
 
 
-def make_loaders(dataset: Dataset, batch_size: int, workers: int, seed: int):
+def make_loaders(dataset: Dataset, batch_size: int, workers: int, seed: int,
+                 validation_dataset: Dataset | None = None):
     generator = torch.Generator().manual_seed(seed)
-    if isinstance(dataset, OASISSliceDataset):
+    if validation_dataset is not None:
+        # OASIS already supplies subject-separated train/validate directories.
+        train_set, val_set = dataset, validation_dataset
+        print(f"Official split: {len(train_set)} train / {len(val_set)} validation slices")
+    elif isinstance(dataset, OASISSliceDataset):
         # Keep every slice from one volume/file in the same split.  Otherwise the
         # validation set could contain another slice of a training subject.
         unique_files = sorted({path for path, _ in dataset.references})
@@ -490,6 +495,8 @@ def load_checkpoint(model: ConvVAE, path: Path, device: torch.device) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train an OASIS convolutional VAE")
     parser.add_argument("--data-dir", type=Path, default=Path("/home/groups/comp3710"))
+    parser.add_argument("--val-dir", type=Path, default=None,
+                        help="official validation directory (recommended for OASIS)")
     parser.add_argument("--output-dir", type=Path, default=Path("results/part4_vae"))
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=64)
@@ -519,6 +526,7 @@ def main() -> None:
 
     if args.smoke_test:
         dataset: Dataset = SyntheticBrainDataset(64, args.image_size, args.seed)
+        validation_dataset = None
         args.epochs = 1
         args.workers = 0
         print("SMOKE TEST: using synthetic images only")
@@ -527,9 +535,13 @@ def main() -> None:
             args.data_dir, args.image_size, args.slice_axis,
             args.slices_per_volume, args.max_files, args.array_layout
         )
+        validation_dataset = (OASISSliceDataset(
+            args.val_dir, args.image_size, args.slice_axis,
+            args.slices_per_volume, args.max_files, args.array_layout
+        ) if args.val_dir else None)
     print(f"Dataset samples/slices: {len(dataset)}")
     train_loader, val_loader = make_loaders(
-        dataset, args.batch_size, args.workers, args.seed
+        dataset, args.batch_size, args.workers, args.seed, validation_dataset
     )
     sample = dataset[0]
     print(f"Input tensor: shape={tuple(sample.shape)}, "
@@ -603,11 +615,13 @@ def main() -> None:
         "best_validation_loss": checkpoint["validation_loss"],
         "training_seconds": elapsed,
         "dataset_samples": len(dataset),
+        "validation_samples": len(validation_dataset) if validation_dataset else len(val_loader.dataset),
         "trainable_parameters": parameter_count,
         "configuration": {
             "data_dir": str(args.data_dir),
+            "val_dir": str(args.val_dir) if args.val_dir else None,
             **{key: value for key, value in vars(args).items()
-               if key not in {"data_dir", "output_dir"}},
+               if key not in {"data_dir", "val_dir", "output_dir"}},
         },
         "history": history,
     }

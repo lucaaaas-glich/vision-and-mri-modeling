@@ -1,6 +1,6 @@
 #!/bin/bash
 # COMP3710 Lab 2 Part 4 Task 1 - OASIS VAE on a Rangpur A100.
-# Usage: sbatch train_oasis_vae_a100.sh /actual/path/to/preprocessed_oasis
+# Usage: sbatch train_oasis_vae_a100.sh /home/groups/comp3710/OASIS
 
 #SBATCH --job-name=oasis-vae
 #SBATCH --account=comp3710
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: sbatch train_oasis_vae_a100.sh /path/to/preprocessed_oasis"
+  echo "Usage: sbatch train_oasis_vae_a100.sh /home/groups/comp3710/OASIS"
   exit 2
 fi
 
@@ -26,7 +26,8 @@ echo "Job $SLURM_JOB_ID on $(hostname), started $(date)"
 nvidia-smi
 
 python pattern_recognition_demo2/part4_oasis_vae.py \
-  --data-dir "$1" \
+  --data-dir "$1/keras_png_slices_train" \
+  --val-dir "$1/keras_png_slices_validate" \
   --epochs 50 \
   --batch-size 64 \
   --latent-dim 16 \
