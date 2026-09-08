@@ -177,6 +177,10 @@ The U-Net used all 9,664 training, 1,120 validation and 544 test slices. Five
 epochs at 128x128 resolution took **90.6 seconds** on a Rangpur A100. Every test
 label exceeded the required DSC of 0.9:
 
+The run was initially named `part4_unet_pilot`, but `max_samples` was unset and
+the complete official splits were used. It became the final selected model once
+every validation and test label passed the required threshold.
+
 | Label value | Class index | Validation DSC | Test DSC |
 | ---: | ---: | ---: | ---: |
 | 0 | 0 | 0.9990 | **0.9990** |

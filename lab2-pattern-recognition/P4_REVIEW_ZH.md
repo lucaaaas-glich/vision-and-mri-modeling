@@ -126,6 +126,7 @@ DSC = 2 * |prediction intersection target| / (|prediction| + |target|)
 ## 7. U-Net 正式结果
 
 数据量：9,664 train、1,120 validation、544 test。5 epochs 在 A100 上用时 90.6 秒。
+虽然训练时输出目录命名为 `part4_unet_pilot`，但 `max_samples` 没有设置，实际使用的是完整官方数据；所有类别达标后，这个 checkpoint 被选为正式模型。
 
 | 类别 | Validation DSC | Test DSC |
 | ---: | ---: | ---: |
