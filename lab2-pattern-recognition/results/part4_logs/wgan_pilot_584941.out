@@ -1,0 +1,16 @@
+Device: cuda
+Training images: 9664
+Generator parameters: 3,851,713
+Critic parameters: 6,958,913
+Epoch 001/8 | critic -72.6951 | generator 43.6723 | W-distance 93.2680 | GP 2.0573 | time 13.4s
+Epoch 002/8 | critic -36.4279 | generator 5.3634 | W-distance 47.8884 | GP 1.1461 | time 10.5s
+Epoch 003/8 | critic -31.2854 | generator 2.9119 | W-distance 41.9234 | GP 1.0638 | time 10.1s
+Epoch 004/8 | critic -29.4071 | generator 5.9271 | W-distance 39.5490 | GP 1.0142 | time 10.6s
+Epoch 005/8 | critic -28.0681 | generator 4.2927 | W-distance 37.3470 | GP 0.9279 | time 10.1s
+Epoch 006/8 | critic -26.8961 | generator -7.6654 | W-distance 35.8230 | GP 0.8927 | time 10.3s
+Epoch 007/8 | critic -26.1415 | generator -12.6174 | W-distance 34.7805 | GP 0.8639 | time 9.4s
+Epoch 008/8 | critic -24.9274 | generator -17.7897 | W-distance 32.8950 | GP 0.7968 | time 9.6s
+Selected generator epoch: 8
+Diversity diagnostics: {'generated_pixel_standard_deviation': 0.17222023010253906, 'mean_pairwise_l1_distance': 0.028652528300881386}
+Total training time: 84.1s
+Checkpoint and evidence saved to: results/part4_wgan_gp

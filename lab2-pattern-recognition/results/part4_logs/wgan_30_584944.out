@@ -1,0 +1,31 @@
+Device: cuda
+Training images: 9664
+Generator parameters: 3,851,713
+Critic parameters: 6,958,913
+Resuming after epoch 8 toward epoch 30
+Epoch 009/30 | critic -100.7237 | generator 61.1650 | W-distance 142.2395 | GP 4.1516 | time 12.3s
+Epoch 010/30 | critic -65.3604 | generator 43.1475 | W-distance 95.4233 | GP 3.0063 | time 10.4s
+Epoch 011/30 | critic -29.7674 | generator -12.4680 | W-distance 40.2701 | GP 1.0503 | time 10.1s
+Epoch 012/30 | critic -26.0739 | generator -32.3322 | W-distance 34.4455 | GP 0.8372 | time 10.8s
+Epoch 013/30 | critic -24.2328 | generator -40.5599 | W-distance 31.9129 | GP 0.7680 | time 10.0s
+Epoch 014/30 | critic -22.7981 | generator -40.5263 | W-distance 29.8679 | GP 0.7070 | time 10.5s
+Epoch 015/30 | critic -21.3567 | generator -40.8872 | W-distance 27.8428 | GP 0.6486 | time 10.5s
+Epoch 016/30 | critic -19.8250 | generator -37.3433 | W-distance 25.6552 | GP 0.5830 | time 10.6s
+Epoch 017/30 | critic -18.7223 | generator -35.0188 | W-distance 24.1123 | GP 0.5390 | time 9.9s
+Epoch 018/30 | critic -17.4595 | generator -30.1498 | W-distance 22.4131 | GP 0.4954 | time 10.3s
+Epoch 019/30 | critic -16.5684 | generator -27.7483 | W-distance 21.0845 | GP 0.4516 | time 9.9s
+Epoch 020/30 | critic -15.6430 | generator -24.3245 | W-distance 19.8467 | GP 0.4204 | time 8.9s
+Epoch 021/30 | critic -14.6195 | generator -22.6220 | W-distance 18.5465 | GP 0.3927 | time 8.9s
+Epoch 022/30 | critic -14.0061 | generator -18.4202 | W-distance 17.6045 | GP 0.3598 | time 9.0s
+Epoch 023/30 | critic -13.5532 | generator -13.8816 | W-distance 16.9680 | GP 0.3415 | time 8.9s
+Epoch 024/30 | critic -13.2065 | generator -11.0726 | W-distance 16.5380 | GP 0.3331 | time 9.0s
+Epoch 025/30 | critic -12.7754 | generator -8.6177 | W-distance 16.0095 | GP 0.3234 | time 8.8s
+Epoch 026/30 | critic -12.4871 | generator -8.2837 | W-distance 15.5796 | GP 0.3092 | time 9.1s
+Epoch 027/30 | critic -12.1334 | generator -7.9383 | W-distance 15.2412 | GP 0.3108 | time 8.6s
+Epoch 028/30 | critic -11.9847 | generator -7.4869 | W-distance 14.9477 | GP 0.2963 | time 8.9s
+Epoch 029/30 | critic -11.8878 | generator -3.2610 | W-distance 14.8830 | GP 0.2995 | time 8.7s
+Epoch 030/30 | critic -11.6311 | generator -2.7334 | W-distance 14.4555 | GP 0.2824 | time 9.1s
+Selected generator epoch: 30
+Diversity diagnostics: {'generated_pixel_standard_deviation': 0.19945897161960602, 'mean_pairwise_l1_distance': 0.05012516677379608}
+Total training time: 213.4s
+Checkpoint and evidence saved to: results/part4_wgan_gp

@@ -17,6 +17,9 @@ data/
 !lab2-pattern-recognition/results/part4_unet/
 !lab2-pattern-recognition/results/part4_unet/*.png
 !lab2-pattern-recognition/results/part4_unet/metrics.json
+!lab2-pattern-recognition/results/part4_wgan_gp/
+!lab2-pattern-recognition/results/part4_wgan_gp/*.png
+!lab2-pattern-recognition/results/part4_wgan_gp/metrics.json
 !lab2-pattern-recognition/results/part4_logs/
 !lab2-pattern-recognition/results/part4_logs/*.out
 *.ckpt

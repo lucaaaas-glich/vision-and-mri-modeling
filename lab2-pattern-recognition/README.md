@@ -50,8 +50,8 @@ environment. Keep cluster setup instructions separate when they are added.
 - [x] Part 4 Task 2: OASIS categorical U-Net implementation (medium route)
 - [x] Part 4 Task 2: Train and verify DSC >0.9 for every label
 - [x] Part 4 Task 3: OASIS WGAN-GP implementation (hard route)
-- [ ] Part 4 Task 3: Train and visually validate realistic diverse brains
-- [ ] Add result plots and demonstration notes
+- [x] Part 4 Task 3: Train and visually validate realistic diverse brains
+- [x] Add result plots and demonstration notes
 - [x] Document AI assistance and external sources
 
 ## Part 3 commands
@@ -193,14 +193,6 @@ for per-label DSC, and [`metrics.json`](results/part4_unet/metrics.json) for the
 complete configuration and history. Raw Rangpur output is retained under
 [`results/part4_logs/`](results/part4_logs/).
 
-## Part 4 references
-
-- D. P. Kingma and M. Welling, [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).
-- O. Ronneberger, P. Fischer and T. Brox, [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597).
-- D. S. Marcus et al., [Open Access Series of Imaging Studies (OASIS)](https://doi.org/10.1162/jocn.2007.19.9.1498).
-
-For Chinese demonstration and revision notes, see [`P4_REVIEW_ZH.md`](P4_REVIEW_ZH.md).
-
 ## Part 4 Task 3: OASIS WGAN-GP
 
 Task 3 uses a custom Wasserstein GAN with gradient penalty. The generator maps
@@ -220,13 +212,56 @@ epoch number without restarting:
 
 ```bash
 python pattern_recognition_demo2/part4_oasis_wgan_gp.py \
-  --resume --epochs 20 --output-dir results/part4_wgan_gp
+  --resume --epochs 30 --output-dir results/part4_wgan_gp
 ```
 
 The program saves fixed-noise samples during training, fresh final generations,
 loss/critic-diagnostic curves and simple pairwise-diversity measurements. These
 diagnostics help identify mode collapse but do not replace visual assessment of
 brain realism.
+
+### WGAN-GP result
+
+The model used all **9,664** OASIS training slices at 128x128 resolution. It was
+trained for 30 epochs in two checkpointed A100 jobs (epochs 1--8 took 84.1
+seconds and epochs 9--30 took 213.4 seconds). At epoch 30 the Wasserstein
+distance was **14.4555** and the gradient penalty was **0.2824**. The final set
+of newly sampled images had pixel standard deviation **0.1995** and mean
+pairwise L1 distance **0.0501**.
+
+The fixed-noise grids show the same latent samples progressing from unstructured
+blobs at epoch 1 to recognisable axial brain-like MR slices by epochs 14--30.
+The final grid contains variation in outline, internal dark regions and tissue
+texture, with no obvious exact duplicates. These numerical diversity measures
+and visual grids provide evidence against obvious mode collapse, although they
+are not clinical measures of anatomical realism. A temporary jump in all critic
+diagnostics at epoch 9 occurred at the boundary between the two Slurm jobs; the
+metrics subsequently stabilised, so the selected generator is the epoch-30
+checkpoint rather than a value chosen from a single loss alone.
+
+| WGAN-GP evidence | File |
+| --- | --- |
+| Fresh final random generations | [`final_generated_brains.png`](results/part4_wgan_gp/final_generated_brains.png) |
+| Fixed-noise samples at epoch 1 | [`samples_epoch_001.png`](results/part4_wgan_gp/samples_epoch_001.png) |
+| Fixed-noise samples at epoch 14 | [`samples_epoch_014.png`](results/part4_wgan_gp/samples_epoch_014.png) |
+| Fixed-noise samples at epoch 22 | [`samples_epoch_022.png`](results/part4_wgan_gp/samples_epoch_022.png) |
+| Fixed-noise samples at epoch 30 | [`samples_epoch_030.png`](results/part4_wgan_gp/samples_epoch_030.png) |
+| Loss and critic diagnostics | [`learning_curves.png`](results/part4_wgan_gp/learning_curves.png) |
+| Configuration and complete history | [`metrics.json`](results/part4_wgan_gp/metrics.json) |
+
+The large generator/critic checkpoint is retained on Rangpur and excluded from
+Git. Raw outputs for both training jobs are retained under
+[`results/part4_logs/`](results/part4_logs/).
+
+## Part 4 references
+
+- D. P. Kingma and M. Welling, [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).
+- O. Ronneberger, P. Fischer and T. Brox, [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597).
+- M. Arjovsky, S. Chintala and L. Bottou, [Wasserstein GAN](https://arxiv.org/abs/1701.07875).
+- I. Gulrajani et al., [Improved Training of Wasserstein GANs](https://arxiv.org/abs/1704.00028).
+- D. S. Marcus et al., [Open Access Series of Imaging Studies (OASIS)](https://doi.org/10.1162/jocn.2007.19.9.1498).
+
+For Chinese demonstration and revision notes, see [`P4_REVIEW_ZH.md`](P4_REVIEW_ZH.md).
 
 ## AI assistance statement
 
