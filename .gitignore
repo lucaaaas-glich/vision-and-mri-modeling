@@ -27,3 +27,4 @@ data/
 *.pt
 *.onnx
 .ipynb_checkpoints/
+.Rhistory

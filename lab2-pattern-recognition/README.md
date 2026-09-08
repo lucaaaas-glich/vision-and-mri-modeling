@@ -40,6 +40,7 @@ environment. Keep cluster setup instructions separate when they are added.
 
 ## Progress checklist
 
+- [x] Part 4.1: Advanced Git short course completed
 - [x] Part 1: NumPy square-wave Fourier reconstruction started
 - [ ] Part 1: NumPy/PyTorch DFT timing comparison
 - [x] Part 2: Eigenfaces, compactness plot, and random-forest classification
@@ -73,7 +74,11 @@ During the demonstration, load the best checkpoint, run inference, and train one
 additional epoch:
 
 ```bash
-python pattern_recognition_demo2/part3_cifar10_resnet18.py --demo --batch-size 256 --workers 4
+python pattern_recognition_demo2/part3_cifar10_resnet18.py \
+  --demo \
+  --checkpoint results/part3_cifar10_resnet18_94_34.pt \
+  --batch-size 256 \
+  --workers 4
 ```
 
 ## Part 3 results
