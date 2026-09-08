@@ -219,6 +219,14 @@ sbatch train_oasis_wgan_a100.sh
 python pattern_recognition_demo2/part4_oasis_wgan_gp.py --demo
 ```
 
+If a short Slurm job ends after saving a checkpoint, continue to a larger total
+epoch number without restarting:
+
+```bash
+python pattern_recognition_demo2/part4_oasis_wgan_gp.py \
+  --resume --epochs 20 --output-dir results/part4_wgan_gp
+```
+
 The program saves fixed-noise samples during training, fresh final generations,
 loss/critic-diagnostic curves and simple pairwise-diversity measurements. These
 diagnostics help identify mode collapse but do not replace visual assessment of

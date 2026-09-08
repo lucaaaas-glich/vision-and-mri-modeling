@@ -255,6 +255,8 @@ def main() -> None:
     parser.add_argument("--smoke-test", action="store_true")
     parser.add_argument("--demo", action="store_true",
                         help="load best generator and create a fresh sample grid")
+    parser.add_argument("--resume", action="store_true",
+                        help="resume model, optimizers and history from latest checkpoint")
     args = parser.parse_args()
 
     set_seed(args.seed)
@@ -264,7 +266,9 @@ def main() -> None:
     print("Device:", device)
 
     if args.smoke_test:
-        args.epochs, args.workers = 1, 0
+        if not args.resume:
+            args.epochs = 1
+        args.workers = 0
         dataset: Dataset = SyntheticBrainDataset(64, args.image_size, args.seed)
         print("SMOKE TEST: synthetic images only")
     else:
@@ -299,9 +303,21 @@ def main() -> None:
     history = {key: [] for key in (
         "critic_loss", "generator_loss", "wasserstein_distance", "gradient_penalty"
     )}
+    start_epoch = 1
+    if args.resume:
+        if not checkpoint_path.exists():
+            raise FileNotFoundError(f"Cannot resume; checkpoint not found: {checkpoint_path}")
+        checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+        generator.load_state_dict(checkpoint["generator_state"])
+        critic.load_state_dict(checkpoint["critic_state"])
+        generator_optimizer.load_state_dict(checkpoint["generator_optimizer_state"])
+        critic_optimizer.load_state_dict(checkpoint["critic_optimizer_state"])
+        history = checkpoint.get("history", history)
+        start_epoch = int(checkpoint["epoch"]) + 1
+        print(f"Resuming after epoch {checkpoint['epoch']} toward epoch {args.epochs}")
     started = time.perf_counter()
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(start_epoch, args.epochs + 1):
         epoch_started = time.perf_counter()
         critic_values, generator_values, distances, penalties = [], [], [], []
         for step, real in enumerate(loader):
@@ -345,6 +361,9 @@ def main() -> None:
         torch.save({
             "generator_state": generator.state_dict(),
             "critic_state": critic.state_dict(),
+            "generator_optimizer_state": generator_optimizer.state_dict(),
+            "critic_optimizer_state": critic_optimizer.state_dict(),
+            "history": history,
             "epoch": epoch,
             "image_size": args.image_size,
             "latent_dim": args.latent_dim,
@@ -370,7 +389,7 @@ def main() -> None:
     save_learning_curves(history, args.output_dir / "learning_curves.png")
     result = {
         "selected_epoch": checkpoint["epoch"],
-        "training_seconds": elapsed,
+        "training_seconds_this_run": elapsed,
         "training_images": len(dataset),
         "diversity_diagnostics": diagnostics,
         "configuration": {key: str(value) if isinstance(value, Path) else value
