@@ -78,10 +78,6 @@ python pattern_recognition_demo2/part3_cifar10_resnet18.py --demo --batch-size 2
 
 ## Part 3 results
 
-For a Chinese revision guide covering tensor shapes, parameter calculations,
-training logic, ResNet-18, mixed precision, results, and demonstration questions,
-see [`P3_REVIEW_ZH.md`](P3_REVIEW_ZH.md).
-
 Both LFW methods used the same 75/25 split with `random_state=42`.
 
 | Task and model | Test accuracy | Notes |
