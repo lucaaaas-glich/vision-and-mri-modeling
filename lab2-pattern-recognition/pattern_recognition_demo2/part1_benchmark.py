@@ -1,4 +1,7 @@
+import argparse
+import json
 import time
+from pathlib import Path
 import numpy as np
 import torch
 
@@ -60,135 +63,132 @@ def naive_dft_torch(x):
     return X
 
 
-device = torch.device(
-    "mps" if torch.backends.mps.is_available()
-    else "cpu"
-)
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Compare direct DFT and FFT timings")
+    parser.add_argument("--sizes", type=int, nargs="+", default=[256, 512, 1024, 2048])
+    parser.add_argument("--output-dir", type=Path, default=Path("results/part1"))
+    args = parser.parse_args()
 
-print("Device:", device)
+    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+    print("Device:", device)
+    f0, duration, n_harmonics = 1, 1.0, 50
+    rows = []
 
-sizes = [
-    256,
-    512,
-    1024,
-    2048
-]
+    print(f"\n{'N':<8}{'Naive CPU':<18}{'NumPy FFT':<18}{'Tensor DFT':<18}{'Max error':<14}")
+    print("-" * 76)
 
-f0 = 1
-T = 1.0
-n_harmonics = 50
+    for N in args.sizes:
 
-print()
-print(
-    f"{'N':<8}"
-    f"{'Naive CPU':<18}"
-    f"{'NumPy FFT':<18}"
-    f"{'GPU DFT':<18}"
-)
+        # -----------------------
+        # Generate same signal
+        # -----------------------
 
-print("-" * 62)
+        t_numpy = np.linspace(
+            0.0,
+            duration,
+            N,
+            endpoint=False
+        )
 
+        signal_numpy = square_wave_fourier_numpy(
+            t_numpy,
+            f0,
+            n_harmonics
+        )
 
-for N in sizes:
+        signal_torch = torch.tensor(
+            signal_numpy,
+            dtype=torch.float32,
+            device=device
+        )
 
-    # -----------------------
-    # Generate same signal
-    # -----------------------
+        # -----------------------
+        # 1. NumPy naive DFT
+        # -----------------------
 
-    t_numpy = np.linspace(
-        0.0,
-        T,
-        N,
-        endpoint=False
-    )
+        start = time.perf_counter()
 
-    signal_numpy = square_wave_fourier_numpy(
-        t_numpy,
-        f0,
-        n_harmonics
-    )
-
-    signal_torch = torch.tensor(
-        signal_numpy,
-        dtype=torch.float32,
-        device=device
-    )
-
-    # -----------------------
-    # 1. NumPy naive DFT
-    # -----------------------
-
-    start = time.perf_counter()
-
-    dft_numpy = naive_dft_numpy(
-        signal_numpy
-    )
-
-    naive_time = (
-        time.perf_counter() - start
-    )
-
-    # -----------------------
-    # 2. NumPy FFT
-    # -----------------------
-
-    # FFT 为 O(N log N)。因为单次太快，重复 100 次再取平均可降低计时误差。
-    repetitions = 100
-
-    start = time.perf_counter()
-
-    for _ in range(repetitions):
-        fft_numpy = np.fft.fft(
+        dft_numpy = naive_dft_numpy(
             signal_numpy
         )
 
-    fft_time = (
-        time.perf_counter() - start
-    ) / repetitions
-
-    # -----------------------
-    # 3. GPU tensor DFT
-    # -----------------------
-
-    if device.type == "mps":
-
-        # Warm-up
-        _ = naive_dft_torch(
-            signal_torch
-        )
-
-        torch.mps.synchronize()
-
-        start = time.perf_counter()
-
-        dft_gpu = naive_dft_torch(
-            signal_torch
-        )
-
-        torch.mps.synchronize()
-
-        gpu_time = (
+        naive_time = (
             time.perf_counter() - start
         )
 
-    else:
+        # -----------------------
+        # 2. NumPy FFT
+        # -----------------------
+
+        # FFT 为 O(N log N)。因为单次太快，重复 100 次再取平均可降低计时误差。
+        repetitions = 100
+
         start = time.perf_counter()
 
-        dft_gpu = naive_dft_torch(
-            signal_torch
-        )
+        for _ in range(repetitions):
+            fft_numpy = np.fft.fft(
+                signal_numpy
+            )
 
-        gpu_time = (
+        fft_time = (
             time.perf_counter() - start
-        )
+        ) / repetitions
 
-    # -----------------------
-    # Print results
-    # -----------------------
+        # -----------------------
+        # 3. GPU tensor DFT
+        # -----------------------
 
-    print(
-        f"{N:<8}"
-        f"{naive_time:<18.6f}"
-        f"{fft_time:<18.8f}"
-        f"{gpu_time:<18.6f}"
-    )
+        if device.type == "mps":
+
+            # Warm-up
+            _ = naive_dft_torch(
+                signal_torch
+            )
+
+            torch.mps.synchronize()
+
+            start = time.perf_counter()
+
+            dft_gpu = naive_dft_torch(
+                signal_torch
+            )
+
+            torch.mps.synchronize()
+
+            gpu_time = (
+                time.perf_counter() - start
+            )
+
+        else:
+            start = time.perf_counter()
+
+            dft_gpu = naive_dft_torch(
+                signal_torch
+            )
+
+            gpu_time = (
+                time.perf_counter() - start
+            )
+
+        # -----------------------
+        # Print results
+        # -----------------------
+
+            max_error = float(np.max(np.abs(dft_numpy - dft_gpu.detach().cpu().numpy())))
+            close = bool(np.allclose(dft_numpy, dft_gpu.detach().cpu().numpy(), atol=1e-2, rtol=1e-3))
+            rows.append({
+                "n": N, "naive_numpy_seconds": naive_time,
+                "numpy_fft_seconds": fft_time, "tensor_dft_seconds": gpu_time,
+                "tensor_device": str(device), "max_absolute_error": max_error,
+                "results_close": close,
+            })
+            print(f"{N:<8}{naive_time:<18.6f}{fft_time:<18.8f}{gpu_time:<18.6f}{max_error:<14.6g}")
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    output = args.output_dir / "benchmark.json"
+    output.write_text(json.dumps({"experiment": "direct DFT versus FFT", "rows": rows}, indent=2))
+    print("Saved reproducible benchmark to:", output)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,27 @@
+{
+  "experiment": "CIFAR-10 custom ResNet-18",
+  "status": "recorded Rangpur A100 run; checkpoint retained locally and excluded from Git",
+  "dataset": {
+    "name": "CIFAR-10",
+    "training_images": 50000,
+    "test_images": 10000
+  },
+  "configuration": {
+    "epochs": 55,
+    "batch_size": 256,
+    "device": "NVIDIA A100",
+    "mixed_precision": true,
+    "architecture": "custom CIFAR ResNet-18",
+    "optimizer": "SGD with momentum, Nesterov and weight decay",
+    "scheduler": "cosine annealing",
+    "label_smoothing": 0.1
+  },
+  "result": {
+    "best_epoch": 53,
+    "best_test_accuracy": 0.9434,
+    "final_test_accuracy": 0.9420,
+    "training_loop_seconds": 341.5,
+    "slurm_job_seconds": 348
+  },
+  "provenance": "Values transcribed from the completed Rangpur run documented in README.md; raw checkpoint and cluster log are not stored in Git."
+}

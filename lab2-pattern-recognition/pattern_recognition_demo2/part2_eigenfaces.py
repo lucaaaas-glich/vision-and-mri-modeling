@@ -1,8 +1,14 @@
 from sklearn.datasets import fetch_lfw_people
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 import numpy as np
+import json
+from pathlib import Path
+
+RESULTS_DIR = Path(__file__).resolve().parents[1] / "results" / "part2"
+RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # Load LFW dataset
@@ -158,7 +164,7 @@ plot_gallery(
     h,
     w
 )
-
+plt.savefig(RESULTS_DIR / "eigenfaces.png", dpi=180, bbox_inches="tight")
 plt.show()
 
 
@@ -189,6 +195,8 @@ plt.xlabel("Number of Principal Components")
 plt.ylabel("Cumulative Explained Variance")
 
 plt.grid(True)
+plt.tight_layout()
+plt.savefig(RESULTS_DIR / "compactness.png", dpi=180)
 plt.show()
 
 print(
@@ -238,3 +246,21 @@ print(
         target_names=target_names
     )
 )
+
+report = classification_report(
+    y_test, predictions, target_names=target_names, zero_division=0, output_dict=True
+)
+metrics = {
+    "experiment": "LFW PCA eigenfaces plus Random Forest",
+    "random_state": 42,
+    "train_samples": int(len(X_train)),
+    "test_samples": int(total_test),
+    "pca_components": n_components,
+    "variance_retained": float(ratio_cumsum[n_components - 1]),
+    "accuracy": float(accuracy),
+    "classification_report": report,
+}
+(RESULTS_DIR / "metrics.json").write_text(json.dumps(metrics, indent=2))
+np.savetxt(RESULTS_DIR / "confusion_matrix.csv", confusion_matrix(y_test, predictions),
+           delimiter=",", fmt="%d")
+print("Saved figures and metrics to:", RESULTS_DIR)

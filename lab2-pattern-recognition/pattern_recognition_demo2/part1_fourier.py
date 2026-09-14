@@ -1,5 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+RESULTS_DIR = Path(__file__).resolve().parents[1] / "results" / "part1"
+RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Number of samples
 N = 2048
@@ -92,6 +96,7 @@ for i, Nh in enumerate(harmonics, start=2):
 
 
 plt.tight_layout()
+plt.savefig(RESULTS_DIR / "fourier_reconstruction.png", dpi=180)
 plt.show()
 
 import time
@@ -178,4 +183,6 @@ plt.ylabel("Magnitude")
 plt.xlim(0, 50)
 
 plt.grid(True)
+plt.tight_layout()
+plt.savefig(RESULTS_DIR / "dft_spectrum.png", dpi=180)
 plt.show()
