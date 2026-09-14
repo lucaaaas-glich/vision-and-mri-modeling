@@ -38,23 +38,6 @@ python -m pip install -r requirements.txt
 The exact PyTorch build used on the Rangpur cluster may differ from the local
 environment. Keep cluster setup instructions separate when they are added.
 
-## Progress checklist
-
-- [x] Part 4.1: Advanced Git short course completed
-- [x] Part 1: NumPy square-wave Fourier reconstruction started
-- [x] Part 1: NumPy/PyTorch DFT timing comparison and saved CPU evidence
-- [x] Part 2: Eigenfaces, compactness plot, and random-forest classification
-- [x] Part 3.1: Two-layer CNN classifier for LFW, trained and evaluated
-- [x] Part 3.2: CIFAR-10 ResNet-18, trained with mixed precision on Rangpur A100
-- [x] Part 4 Task 1: OASIS convolutional VAE implementation
-- [x] Part 4 Task 1: Train on Rangpur and record VAE results
-- [x] Part 4 Task 2: OASIS categorical U-Net implementation (medium route)
-- [x] Part 4 Task 2: Train and verify DSC >0.9 for every label
-- [x] Part 4 Task 3: OASIS WGAN-GP implementation (hard route)
-- [x] Part 4 Task 3: Train and visually validate realistic diverse brains
-- [x] Add result plots and demonstration notes
-- [x] Document AI assistance and external sources
-
 ## Part 3 commands
 
 Quickly verify the LFW CNN pipeline, then run the full 20 epochs:
