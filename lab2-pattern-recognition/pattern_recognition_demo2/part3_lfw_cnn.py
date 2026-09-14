@@ -1,6 +1,7 @@
 """COMP3710 Lab 2 Part 3.1: 使用两层 CNN 进行 LFW 人脸分类。"""
 
 import argparse
+import json
 import random
 from pathlib import Path
 
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.datasets import fetch_lfw_people
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
@@ -197,10 +198,29 @@ def main() -> None:
     print(classification_report(y_true, y_pred, target_names=target_names, zero_division=0))
 
     project_root = Path(__file__).resolve().parents[1]
-    results_dir = project_root / "results"
-    results_dir.mkdir(exist_ok=True)
-    torch.save(model.state_dict(), results_dir / "part3_lfw_cnn.pt")
-    plot_history(history, results_dir / "part3_lfw_cnn_history.png")
+    results_dir = project_root / "results" / "part3_lfw_cnn"
+    results_dir.mkdir(parents=True, exist_ok=True)
+    torch.save(model.state_dict(), results_dir / "model.pt")
+    plot_history(history, results_dir / "learning_curves.png")
+    report = classification_report(
+        y_true, y_pred, target_names=target_names, zero_division=0, output_dict=True
+    )
+    metrics = {
+        "experiment": "LFW two-layer CNN",
+        "seed": 42,
+        "epochs": epochs,
+        "batch_size": args.batch_size,
+        "learning_rate": args.learning_rate,
+        "device": str(device),
+        "train_samples": len(train_loader.dataset),
+        "test_samples": len(test_loader.dataset),
+        "final_test_accuracy": history["test_accuracy"][-1],
+        "history": history,
+        "classification_report": report,
+    }
+    (results_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+    np.savetxt(results_dir / "confusion_matrix.csv", confusion_matrix(y_true, y_pred),
+               delimiter=",", fmt="%d")
     print("Saved model and learning curves to:", results_dir)
 
 

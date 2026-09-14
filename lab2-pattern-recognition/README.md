@@ -42,7 +42,7 @@ environment. Keep cluster setup instructions separate when they are added.
 
 - [x] Part 4.1: Advanced Git short course completed
 - [x] Part 1: NumPy square-wave Fourier reconstruction started
-- [ ] Part 1: NumPy/PyTorch DFT timing comparison
+- [x] Part 1: NumPy/PyTorch DFT timing comparison and saved CPU evidence
 - [x] Part 2: Eigenfaces, compactness plot, and random-forest classification
 - [x] Part 3.1: Two-layer CNN classifier for LFW, trained and evaluated
 - [x] Part 3.2: CIFAR-10 ResNet-18, trained with mixed precision on Rangpur A100
@@ -107,7 +107,27 @@ faster. The best result occurred at epoch 53; the final epoch accuracy was
 - Random crop and horizontal flip provide training-time data augmentation.
 - CUDA automatic mixed precision reduces training time and GPU memory use.
 - SGD with momentum, weight decay, label smoothing, and cosine learning-rate
-  decay provide stable convergence.
+decay provide stable convergence.
+
+## Parts 1-3 reproducible evidence
+
+The lightweight plots and metrics below are committed so the demonstration does
+not depend on terminal scrollback. Large datasets and model checkpoints remain
+excluded from Git.
+
+| Part | Evidence | Reproduce in PyCharm or a terminal |
+| --- | --- | --- |
+| 1 | [`benchmark.json`](results/part1/benchmark.json), [`fourier_reconstruction.png`](results/part1/fourier_reconstruction.png), [`dft_spectrum.png`](results/part1/dft_spectrum.png) | `python pattern_recognition_demo2/part1_fourier.py` and `python pattern_recognition_demo2/part1_benchmark.py` |
+| 2 | [`metrics.json`](results/part2/metrics.json), [`eigenfaces.png`](results/part2/eigenfaces.png), [`compactness.png`](results/part2/compactness.png), [`confusion_matrix.csv`](results/part2/confusion_matrix.csv) | `python pattern_recognition_demo2/part2_eigenfaces.py` |
+| 3.1 | [`metrics.json`](results/part3_lfw_cnn/metrics.json), [`learning_curves.png`](results/part3_lfw_cnn/learning_curves.png), [`confusion_matrix.csv`](results/part3_lfw_cnn/confusion_matrix.csv) | `python pattern_recognition_demo2/part3_lfw_cnn.py --epochs 20` |
+| 3.2 | [`metrics.json`](results/part3_cifar10/metrics.json) | Use `sbatch train_cifar_a100.sh`; the checkpoint is deliberately not committed. |
+
+The committed Part 1 benchmark was generated on CPU and records its device in
+the JSON file. Run it again on a CUDA or MPS machine when demonstrating GPU
+timing; do not describe the CPU tensor column as a GPU result. The committed LFW
+CNN evidence is a seeded 20-epoch CPU rerun (86.65%); the earlier M2 MPS run in
+the summary table reached 87.27%. Small differences across PyTorch backends are
+expected, so the metrics file records the device and full learning history.
 
 ## Part 4 Task 1: OASIS VAE
 

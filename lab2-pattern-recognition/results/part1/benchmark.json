@@ -1,0 +1,41 @@
+{
+  "experiment": "direct DFT versus FFT",
+  "rows": [
+    {
+      "n": 256,
+      "naive_numpy_seconds": 0.023295124992728233,
+      "numpy_fft_seconds": 1.9991667941212654e-05,
+      "tensor_dft_seconds": 0.013254583813250065,
+      "tensor_device": "cpu",
+      "max_absolute_error": 0.0022601571050489726,
+      "results_close": true
+    },
+    {
+      "n": 512,
+      "naive_numpy_seconds": 0.09512583306059241,
+      "numpy_fft_seconds": 5.558747798204422e-06,
+      "tensor_dft_seconds": 0.0013121250085532665,
+      "tensor_device": "cpu",
+      "max_absolute_error": 0.011850724434254719,
+      "results_close": true
+    },
+    {
+      "n": 1024,
+      "naive_numpy_seconds": 0.375769583042711,
+      "numpy_fft_seconds": 8.669579401612281e-06,
+      "tensor_dft_seconds": 0.004783624783158302,
+      "tensor_device": "cpu",
+      "max_absolute_error": 0.05506377047274568,
+      "results_close": false
+    },
+    {
+      "n": 2048,
+      "naive_numpy_seconds": 1.5099260001443326,
+      "numpy_fft_seconds": 1.4869160950183868e-05,
+      "tensor_dft_seconds": 0.03817262453958392,
+      "tensor_device": "cpu",
+      "max_absolute_error": 0.23163360527752938,
+      "results_close": false
+    }
+  ]
+}
