@@ -1,14 +1,13 @@
-# Lab 2: Pattern Recognition
+# Image Classification and Brain MRI Modeling
 
-Work in progress for COMP3710 Lab Demonstration 2 (2026). The lab covers four
-connected areas:
+Python/PyTorch experiments spanning four connected areas:
 
 1. discrete Fourier transforms and PyTorch GPU timing;
 2. PCA eigenfaces and random-forest classification;
 3. an LFW CNN classifier and a CIFAR-10 ResNet-18 challenge; and
 4. an advanced recognition task using the OASIS brain MRI dataset.
 
-## Planned structure
+## Repository structure
 
 ```text
 lab2-pattern-recognition/
