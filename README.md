@@ -1,37 +1,39 @@
-# COMP3710 Pattern Recognition and Analysis
+# Vision and MRI Modeling
 
-Coursework and laboratory projects for COMP3710 at the University of
-Queensland.
+Computer vision experiments covering image classification, brain MRI segmentation,
+reconstruction and generation, with reproducible Python/PyTorch code and recorded results.
 
-## Laboratories
+## Highlights
 
-| Lab | Topic | Status |
-| --- | --- | --- |
-| [Lab 1](lab1-barnsley-fern/) | PyTorch Barnsley Fern and fractal analysis | Complete |
-| [Lab 2](lab2-pattern-recognition/) | DFT, eigenfaces, CNNs, and recognition | In progress |
+- **Image classification:** compare PCA + Random Forest with a two-layer CNN on
+  the same LFW split; recorded CPU test accuracy is 60.87% and 86.65%, respectively.
+- **Brain MRI segmentation:** train U-Net on 9,664 OASIS slices and evaluate on
+  544 test slices; Dice exceeds 0.94 for all four classes, including background.
+- **Generative modeling:** explore VAE reconstruction and WGAN-GP generation.
+- **Numerical foundations:** Fourier/DFT benchmarks and PyTorch fractal analysis.
 
-Each laboratory is self-contained and has its own README, source code, and
-dependency list. Run commands from the relevant lab directory unless its
-README says otherwise.
+## Explore the project
 
-## Repository structure
+| Component | Code and explanation |
+| --- | --- |
+| Classification, MRI and Fourier experiments | [Technical guide](lab2-pattern-recognition/README.md) |
+| Saved metrics and visualizations | [Results](lab2-pattern-recognition/results/) |
+| Fractal modeling and analysis | [Barnsley fern](lab1-barnsley-fern/README.md) |
 
-```text
-comp3710/
-|-- lab1-barnsley-fern/
-|   |-- README.md
-|   |-- barnsley_fern.py
-|   |-- analyze_fern.py
-|   `-- images/
-|-- lab2-pattern-recognition/
-|   |-- README.md
-|   |-- requirements.txt
-|   `-- src/
-`-- README.md
-```
+Start with the component README for environment setup and commands. The directory
+names are kept stable so existing scripts and result links continue to work.
+Training used PyTorch on CPU, Apple MPS and an NVIDIA A100/Slurm environment.
+Large datasets and model checkpoints are not distributed in this repository.
 
-## Academic integrity and AI use
+## Interpreting the results
 
-This repository records coursework development through meaningful Git commits.
-Any AI-assisted work should be documented in the relevant lab and must be
-understood well enough to explain during the laboratory demonstration.
+Metrics describe the recorded datasets and splits, not clinical validation or
+general performance guarantees. Each component documents the exact experiment,
+hardware and limitations; experiments with different evaluation protocols should
+not be compared as controlled improvements.
+
+## Development and attribution
+
+Development history is retained in Git. AI assistance is documented in the
+component notes and [AI usage record](lab1-barnsley-fern/AI_USAGE.md).
+Upstream libraries and datasets retain their own terms and attribution.
